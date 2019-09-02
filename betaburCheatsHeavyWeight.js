@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         betaburCheatsHeavyWeight
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  You own the premium heavy weight version of this script!
 // @author       dragonminja24
 // @match        http*://*beta.avabur.com/game*
