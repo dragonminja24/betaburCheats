@@ -1,13 +1,13 @@
 // ==UserScript==
-// @name         CheatsOfBetaburLightWeight
+// @name         betaburCheatsLightweight
 // @namespace    http://tampermonkey.net/
-// @version      1.3.0
+// @version      1.0.0
 // @description  You own the lightweight version of this script!
 // @author       dragonminja24
 // @match        http*://*beta.avabur.com/game*
 // @grant        none
-// @downloadURL  https://github.com/dragonminja24/CheatsOfBetabur/raw/master/CheatsOfBetaburLightweight.js
-// @updateURL    https://github.com/dragonminja24/CheatsOfBetabur/raw/master/CheatsOfBetaburLightweight.js
+// @downloadURL  https://github.com/dragonminja24/betaburCheats/raw/master/betaburCheatsLightweight.js
+// @updateURL    https://github.com/dragonminja24/betaburCheats/raw/master/betaburCheatsLightweight.js
 // Join the discord for configuration information:
 // https://discord.gg/R6M55nB
 // ==/UserScript==
