@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         betaburCheatsHeavyWeight
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  You own the premium heavy weight version of this script!
 // @author       dragonminja24
 // @match        http*://*beta.avabur.com/game*
@@ -15,30 +15,41 @@
 (function($) {
     'use strict';
 //After you configured all variables make a local copy of the configuration with the version so you have it for future updates
-//All configurable variables and their function are explained on the discord ( search for the function like  manualHousing
-    //Version 1.0.0
+// READ behind the variable! It tells you what you need
+    //Start copying here
+    //Version 1.0.2------------------------------------------------------------------------------
+
+    //Independend
+    let autoCrafting = false // NEVER turn it on here! Only use with crafting table level 30 or higher
+
+    //Event
+    let joinLateEvent = [""] // everyone in this list only joins after the carving limit exceeded
+
+    //Version 1.0.1-------------------------------------------------------------------------------
+
     // Independend
     let autoStamina = true
-    let autoHarvestron = false
-    let autoQuest = true
-    let autoHousing = true
+    let autoHarvestron = false // At least own the harvestron and all tools for this
+    let autoQuest = true // Have 3 different quests active before using this. combat + TS + profession
+    let autoHousing = true // Building first item in quick build list
 
     // manualHousing
-    let manualHousingBTN = false
-    let item = 30
-    let room = 0
+    let manualHousingBTN = false //build the specified item in the specified room
+    //video on discord
+    let item = 30 //data-itemtype=
+    let room = 0 //data-roomtype=
 
     // autoWire
-    let autoWire = true
-    let wireName = 'dmii'
-    let wireGoldCount = 5000000000
+    let autoWire = true //automatically wires specified things every 30 seconds ( if you can )
+    let wireName = 'dmii' // this has to match the name you want to wire to
+    let wireGoldCount = 5000000000 // amount you wire at once if possible
     let wireCrystalCount = 200
     let wirePlatCount = 1000000
     let wireFoodCount = 0
     let wireWoodCount = 0
     let wireIronCount = 0
     let wireStoneCount = 0
-    let goldStock = 1000000000
+    let goldStock = 1000000000 // stock means you keep this amount always and won't wire more if you would fall below it
     let crystalStock = 50
     let platinumStock = 100000
     let foodStock = 10000000
@@ -47,35 +58,45 @@
     let stoneStock= 10000000
 
     // chatCommand
-    let ingredientWireName = 'dragonminja'
-    let chatCommandChannel = 3104
-    let Fishing = ["dmi","dmiii","dmiv","dmv","dmvi","dmvii"] // If you send your alts do TS all inside fishing go fishing
-    let Woodcutting = ["dmviii","dmix","dmx","dmxi","dmxii","dmxiii"]
-    let Mining = ["dmxv","dmxvi","dmxvii","dmxviii","dmxix","dmxx"]
-    let Stonecutting = ["dmxxv","dmxxvi","dmxxvii","dmxxviii","dmxxix"]
+    // available chat commands:
+    //doTS (everyone in the lists below switches to the specified TS)
+    //doCombat (everyone switch to combat)
+    //wireIngredients (everyone wires you all of his ingredients)
+    let ingredientWireName = 'dragonminja' // You need "Avabur Ingredient Sender" Script for this!
+    //video on discord
+    let chatCommandChannel = 3104 // your custom channel ID
+    let fishing = ["dmi","dmiii","dmiv","dmv","dmvi","dmvii"] // If you send your alts do TS all inside fishing go fishing
+    let woodcutting = ["dmviii","dmix","dmx","dmxi","dmxii","dmxiii"]
+    let mining = ["dmxv","dmxvi","dmxvii","dmxviii","dmxix","dmxx"]
+    let stonecutting = ["dmxxv","dmxxvi","dmxxvii","dmxxviii","dmxxix"]
 
     // event
-    let eventCommandChannel = 3098
-    let mainCharacter = ["dragonminja","dmii","dmxiv"]
-    let primaryFood = [""]
+    //available commands:
+    //InitEvent ( this will initiate a regular event as it is programmed )
+    //MainEvent ( in this event carving has no limit and only your main characters fight at the end )
+    //video on discord
+    let eventCommandChannel = 3098 // custom event channel
+    let mainCharacter = ["dragonminja","dmii","dmxiv"] // mainCharacter that fights if you wrie MainEvent
+    let primaryFood = [""] //All primary lists define what you do first in an event
     let primaryWood = [""]
     let primaryIron = [""]
     let primaryStone =[""]
     let primaryCraft =[""]
     let primaryCarve =["dmi","dmii","dmiii","dmiv","dmv","dmvi","dmvii","dmviii","dmvix","dmx","dmxi","dmxii","dmxiii","dmxiv","dmxv","dmxvi","dmxvii","dmxviii","dmxix","dmxx","dmxxv","dmxxvi","dmxxvii","dmxxviii","dmxxix","dragonminja"]
-    let secondaryFood = ["dmi","dmiii","dmiv","dmv","dmvi","dmvii"]
+    let secondaryFood = ["dmi","dmiii","dmiv","dmv","dmvi","dmvii"] // all secondary lists define your secondary skill which is performed at 4-3 minutes
     let secondaryWood = ["dmviii","dmix","dmx","dmxi","dmxii","dmxiii"]
     let secondaryIron = ["dmxv","dmxvi","dmxvii","dmxviii","dmxix","dmxx"]
     let secondaryStone = ["dmxxv","dmxxvi","dmxxvii","dmxxviii","dmxxix"]
     let secondaryCraft =["dmii","dragonminja","dmxiv"]
     let secondaryCarve = [""]
-//If you paste your own configurations stop here ---------------------------------------------
+//Stop copying / pasting here
 //Don't touch anything below this point
 
 
 //Chat command variables
     let myTS
-    const tradeList = [Fishing,Woodcutting,Mining,Stonecutting]
+    let lazyMain
+    const tradeList = [fishing,woodcutting,mining,stonecutting]
     //Event related variables
     let msgID
     const fish = document.getElementsByClassName('bossHarvest btn btn-primary')[4]
@@ -115,7 +136,7 @@
             autoWire = false
         }
 
-        checkArray = [autoStamina,autoHarvestron,autoQuest,autoWire,autoHousing,manualHousingBTN]
+        checkArray = [autoStamina,autoHarvestron,autoQuest,autoWire,autoHousing,manualHousingBTN,autoCrafting]
         for(let i=0; i<checkArray.length; i++){
             if(checkArray[i]){
                 checkArray[i] = "checked"
@@ -348,8 +369,20 @@
         })
     }
 
+    function isLazyEvent(){
+        joinLateEvent.forEach((element) => {
+            if(username == element){
+                lazyMain = true
+            }
+        })
+    }
+
     function changeTrade(id){
         let time = $('#eventCountdown')[0].innerHTML
+        if($('#currentBossCarvingTier')[0].innerHTML > 2500 && lazyMain){
+            document.getElementsByClassName('bossFight btn btn-primary')[0].click()
+        }
+
         if($('#currentBossCarvingTier')[0].innerHTML > 2500 && carvingChanger == 0 && !mainEvent){
             ++carvingChanger
             if(secondaryTrade != 5){
@@ -358,26 +391,31 @@
                 document.getElementsByClassName('bossFight btn btn-primary')[0].click()
             }
         }
-        if(isMain){
-            if(time.includes("03m") && mainChanger == 0){
-                ++mainChanger
-                buttonList[secondaryTrade].click()
-            }
-            if(time.includes("02m") && bossChanger == 0){
-                ++bossChanger
-                document.getElementsByClassName('bossFight btn btn-primary')[0].click()
-            }
-        }else{
-            if(time.includes("02m") && altChanger == 0){
-                ++altChanger
-                buttonList[secondaryTrade].click()
+
+        if(!lazyMain){
+            if(isMain){
+                if(time.includes("03m") && mainChanger == 0){
+                    ++mainChanger
+                    buttonList[secondaryTrade].click()
+                }
+                if(time.includes("02m") && bossChanger == 0){
+                    ++bossChanger
+                    document.getElementsByClassName('bossFight btn btn-primary')[0].click()
+                }
+            }else{
+                if(time.includes("02m") && altChanger == 0){
+                    ++altChanger
+                    buttonList[secondaryTrade].click()
+                }
             }
         }
 
         if(time.includes("01m")){
             if(!isMain){
-                if(!mainEvent){
-                    document.getElementsByClassName('bossFight btn btn-primary')[0].click()
+                if(!lazyMain){
+                    if(!mainEvent){
+                        document.getElementsByClassName('bossFight btn btn-primary')[0].click()
+                    }
                 }
             }
             $("#eventCountdown").unbind()
@@ -413,7 +451,10 @@
                             mainEvent = false
                         }
                         eventId = msgID
-                        buttonList[mainTrade].click()
+
+                        if(!lazyMain){
+                            buttonList[mainTrade].click()
+                        }
                         await delay(70000)
                         $('#eventCountdown').bind("DOMSubtreeModified", changeTrade); // everyone else
                     }
@@ -450,7 +491,9 @@ Auto Wire</br>
 <input type="text" id="ironTB" value=`+wireIronCount +`  style="width:10%; margin-left: 2%;">Iron</input></br>
 <input type="text" id="stoneTB" value=`+wireStoneCount +`  style="width:10%; margin-left: 2%;">Stone</input><br>to</br>
 <input type="text" id="nameTB" value=`+ wireName +`  style="width:20%; margin-left: 2%;"></input>
-<input type="checkbox" id="autoWire" `+ checkArray[3] + ` style="margin-left: 2%;">Auto Wire</input>
+<input type="checkbox" id="autoWire" `+ checkArray[3] + ` style="margin-left: 2%;">Auto Wire</input></br>
+<input type="checkbox" id="autoCrafting"`+ checkArray[6] + ` style="margin-left: 2%;">Auto Crafting</input>
+
 </li>
 </ul>
 </h4>
@@ -492,6 +535,10 @@ Auto Wire</br>
 
     $(document).on('click', 'input#autoWire', function(event) {
         autoWire = document.getElementById('autoWire').checked
+    })
+
+    $(document).on('click', 'input#autoCrafting', function(event) {
+        autoCrafting = document.getElementById('autoCrafting').checked
     })
 
     $(document).on('click', 'input#goldTB', function(event) {
@@ -622,6 +669,38 @@ Auto Wire</br>
             resolve()
         })
     }
+    //Click OK button section
+
+    function acceptEverything(){
+        return new Promise((resolve,reject) => {
+            if($('a[class="button green"]').length > 0){
+                $('a[class="button green"]').click()
+            }
+            resolve()
+        })
+    }
+    //crafting
+
+    function crafting(){
+        return new Promise(async(resolve,reject) => {
+            if(autoCrafting){
+                let max = document.getElementById('craftingQueuedMax').innerHTML
+                let current = document.getElementById('craftingQueuedCount').innerHTML
+                if(max-current > 10 ){
+                    document.getElementsByClassName('craftingTableLink')[0].click()
+                    await delay(5000)
+                    $('#craftingItemLevelMax').click()
+                    await delay(200)
+                    $('#craftingJobFillQueue').click()
+                    await delay(400)
+                    document.getElementsByClassName('craftingJobStartQueue btn btn-primary')[0].click()
+                    await delay(1000)
+                     $('span.closeModal')[0].click()
+                }
+            }
+            resolve()
+        })
+    }
     //-------------------------------------------------------------------------
     function setupCSSObserver(){
         let modalListener = document.querySelector('#modalWrapper')
@@ -649,6 +728,7 @@ Auto Wire</br>
         await delay(30000)
         await automaticWire()
         await checkStamina()
+        await acceptEverything()
         primaryLoop()
     }
 
@@ -658,6 +738,7 @@ Auto Wire</br>
         await handleHarvestron()
         await checkQuest()
         await chatCommands()
+        await crafting()
         secondaryLoop()
     }
 //--------------------------------------------------------
@@ -671,6 +752,7 @@ Auto Wire</br>
         assignTrade(getSecondaryTrade,1)
         assignTrade(tradeList,2)
         isMainCharacter()
+        isLazyEvent()
         buildUI()
     }
     init()
