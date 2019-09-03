@@ -40,7 +40,7 @@
     let room = 0 //data-roomtype=
 
     // autoWire
-    let autoWire = true //automatically wires specified things every 30 seconds ( if you can )
+    let autoWire = false //automatically wires specified things every 30 seconds ( if you can )
     let wireName = 'dmii' // this has to match the name you want to wire to
     let wireGoldCount = 5000000000 // amount you wire at once if possible
     let wireCrystalCount = 200
